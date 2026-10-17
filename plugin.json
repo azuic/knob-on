@@ -1,0 +1,19 @@
+{
+  "slug": "KnobOn",
+  "name": "Knob On",
+  "version": "2.3.0",
+  "license": "GPL-3.0-or-later",
+  "brand": "Knob On",
+  "author": "Knob On contributors",
+  "modules": [
+    {
+      "slug": "Bridge",
+      "name": "Bridge",
+      "description": "Sixteen high-resolution network controls with parameter learning and two-way feedback",
+      "tags": [
+        "Controller",
+        "Utility"
+      ]
+    }
+  ]
+}
