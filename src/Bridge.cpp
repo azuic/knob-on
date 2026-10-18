@@ -4,16 +4,13 @@
 
 Plugin* pluginInstance;
 
-// Rack's SVG renderer omits <text>; draw panel lettering with Rack's font API.
+// The wordmark is outlined in Bridge.svg; other panel text uses Rack's font API.
 struct BridgePanelText : widget::TransparentWidget {
     void draw(const DrawArgs& args) override {
         auto font = APP->window->loadFont(asset::system("res/fonts/DejaVuSans.ttf"));
         if (!font) return;
         nvgFontFaceId(args.vg, font->handle);
         nvgTextAlign(args.vg, NVG_ALIGN_CENTER | NVG_ALIGN_TOP);
-        nvgFillColor(args.vg, nvgRGB(28, 29, 32));
-        nvgFontSize(args.vg, 15);
-        nvgText(args.vg, 75, 24, "knob on", nullptr);
         nvgFillColor(args.vg, nvgRGB(103, 107, 114));
         nvgFontSize(args.vg, 10);
         nvgText(args.vg, 75, 46, "bridge / 16", nullptr);
