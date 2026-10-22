@@ -1,12 +1,8 @@
 #pragma once
-#include <arpa/inet.h>
-#include <fcntl.h>
-#include <netinet/tcp.h>
-#include <sys/socket.h>
-#include <unistd.h>
+#include "Socket.hpp"
 #include <algorithm>
-#include <cerrno>
 #include <chrono>
+#include <cstdint>
 #include <functional>
 #include <string>
 
@@ -18,61 +14,68 @@ inline double now() {
 // Called only by Rack's UI step. Every socket is nonblocking, with per-frame
 // read/write budgets and bounded buffers. Never called from Module::process().
 class TcpServer {
-    int listener = -1;
-    int client = -1;
+    net::Runtime runtime;
+    net::Socket listener = net::invalid;
+    net::Socket client = net::invalid;
+    uint16_t listenerPort = 8057;
     std::string input, output;
     double lastReceive = 0;
     bool announced = false;
 public:
+    TcpServer() = default;
+    TcpServer(const TcpServer&) = delete;
+    TcpServer& operator=(const TcpServer&) = delete;
     std::string status = "Starting…";
     std::function<void(const std::string&)> onLine;
     std::function<void()> onConnect;
     std::function<void()> onDisconnect;
     ~TcpServer() { stop(); }
-    bool connected() const { return client >= 0; }
-
-    static void configure(int fd) {
-        fcntl(fd, F_SETFL, fcntl(fd, F_GETFL, 0) | O_NONBLOCK);
-        fcntl(fd, F_SETFD, FD_CLOEXEC);
-#ifdef SO_NOSIGPIPE
-        int one = 1;
-        setsockopt(fd, SOL_SOCKET, SO_NOSIGPIPE, &one, sizeof(one));
-#endif
-    }
+    bool connected() const { return client != net::invalid; }
+    std::string listeningStatus() const { return "Listening :" + std::to_string(listenerPort); }
 
     bool start(uint16_t port = 8057) {
         stop();
+        listenerPort = port;
+        if (!runtime.ready()) { status = "Network startup failed"; return false; }
         listener = socket(AF_INET, SOCK_STREAM, 0);
-        if (listener < 0) { status = "Socket failed"; return false; }
-        configure(listener);
-        int one = 1;
-        setsockopt(listener, SOL_SOCKET, SO_REUSEADDR, &one, sizeof(one));
+        if (listener == net::invalid) { status = "Socket failed"; return false; }
+#ifdef _WIN32
+        // SO_REUSEADDR on Windows can steal an existing Bridge's port.
+        const int reuseOption = SO_EXCLUSIVEADDRUSE;
+#else
+        const int reuseOption = SO_REUSEADDR;
+#endif
+        if (!net::configure(listener) || !net::option(listener, SOL_SOCKET, reuseOption, 1)) {
+            net::close(listener); listener = net::invalid;
+            status = "Socket setup failed";
+            return false;
+        }
         sockaddr_in address{};
         address.sin_family = AF_INET;
         address.sin_port = htons(port);
         address.sin_addr.s_addr = htonl(INADDR_ANY);
         if (bind(listener, reinterpret_cast<sockaddr*>(&address), sizeof(address)) < 0 || listen(listener, 1) < 0) {
-            close(listener); listener = -1;
-            status = "Port 8057 unavailable";
+            net::close(listener); listener = net::invalid;
+            status = "Port " + std::to_string(port) + " unavailable";
             return false;
         }
-        status = "Listening :8057";
+        status = listeningStatus();
         return true;
     }
 
     void drop() {
-        if (client >= 0) close(client);
-        client = -1;
+        if (connected()) net::close(client);
+        client = net::invalid;
         input.clear(); output.clear();
         if (announced && onDisconnect) onDisconnect();
         announced = false;
-        if (listener >= 0) status = "Listening :8057";
+        if (listener != net::invalid) status = listeningStatus();
     }
 
     void stop() {
         drop();
-        if (listener >= 0) close(listener);
-        listener = -1;
+        if (listener != net::invalid) net::close(listener);
+        listener = net::invalid;
     }
 
     void sendLine(const std::string& line) {
@@ -83,16 +86,14 @@ public:
     }
 
     void step() {
-        if (listener < 0) return;
+        if (listener == net::invalid) return;
         // Keep the existing controller when a second client tries to connect.
-        int incoming = accept(listener, nullptr, nullptr);
-        if (incoming >= 0) {
-            if (client >= 0) close(incoming);
+        net::Socket incoming = accept(listener, nullptr, nullptr);
+        if (incoming != net::invalid) {
+            if (connected() || !net::configure(incoming)) net::close(incoming);
             else {
                 client = incoming;
-                configure(client);
-                int one = 1;
-                setsockopt(client, IPPROTO_TCP, TCP_NODELAY, &one, sizeof(one));
+                net::option(client, IPPROTO_TCP, TCP_NODELAY, 1);
                 lastReceive = now();
                 announced = true;
                 status = "Connected";
@@ -102,10 +103,10 @@ public:
         if (!connected()) return;
         char buffer[4096];
         for (int budget = 0; budget < 4 && connected(); ++budget) {
-            ssize_t count = recv(client, buffer, sizeof(buffer), 0);
+            auto count = recv(client, buffer, sizeof(buffer), 0);
             if (count == 0) { drop(); return; }
             if (count < 0) {
-                if (errno != EAGAIN && errno != EWOULDBLOCK && errno != EINTR) drop();
+                if (!net::retryable()) drop();
                 break;
             }
             lastReceive = now();
@@ -129,9 +130,9 @@ public:
 #else
             constexpr int flags = 0;
 #endif
-            ssize_t sent = ::send(client, output.data(), std::min<size_t>(output.size(), 16384), flags);
+            auto sent = ::send(client, output.data(), static_cast<int>(std::min<size_t>(output.size(), 16384)), flags);
             if (sent > 0) output.erase(0, static_cast<size_t>(sent));
-            else if (sent < 0 && errno != EAGAIN && errno != EWOULDBLOCK && errno != EINTR) drop();
+            else if (sent < 0 && !net::retryable()) drop();
         }
     }
 };

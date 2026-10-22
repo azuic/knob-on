@@ -40,10 +40,11 @@ struct BridgeDisplay : widget::Widget {
         std::string status = "ready to connect";
         if (module) status = module->started ? (module->server.connected() ? "connected" : "ready to connect") : module->server.status;
         line(status, 0, 10, nvgRGB(75, 152, 89));
-        line("find in app", 22, 9, grey);
+        line(module && !module->discovery.advertised ? "connect by address" : "find in app", 22, 9, grey);
         line(module ? module->discovery.name : "knob-…", 37, 16, ink);
-        line("or enter this address", 61, 8, grey);
-        line(module ? module->discovery.address : "your-mac.local", 75, 11, ink);
+        line("enter address manually", 61, 8, grey);
+        line(module ? (module->discovery.address.empty() ? "check network settings" : module->discovery.address)
+                    : "computer address", 75, 11, ink);
         std::string text = "0 / 16 connected";
         if (module) {
             if (module->learning) text = Bridge::controlName(module->learningControl) + ": touch in Rack";
@@ -130,6 +131,9 @@ struct BridgeWidget : app::ModuleWidget {
 Model* modelBridge = createModel<Bridge, BridgeWidget>("Bridge");
 
 void init(Plugin* plugin) {
+#ifdef _WIN32
+    INFO("Knob On Bridge Windows test2: init; MSVCRT / Jansson allocator correction");
+#endif
     pluginInstance = plugin;
     plugin->addModel(modelBridge);
 }

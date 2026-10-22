@@ -2,4 +2,6 @@
 build/
 dist/
 plugin.dylib
+plugin.dll
+__pycache__/
 .DS_Store

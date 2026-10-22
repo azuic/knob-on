@@ -1,0 +1,91 @@
+{
+  "recordedDate": "2026-10-22",
+  "plugin": "KnobOn",
+  "module": "Bridge",
+  "version": "2.3.1",
+  "candidate": "Windows test2",
+  "build": {
+    "host": "macOS arm64",
+    "target": "Windows x64",
+    "sdk": "Rack SDK 2.6.6",
+    "compiler": "GCC 13.2.0 / MinGW-w64 11.0.1",
+    "crt": "MSVCRT",
+    "homebrewBottleSha256": "166737c970ee5a025dc5ecfc36afd0850ed16a4a3b13ac7a1a706b7d98eb20b7"
+  },
+  "testedIdentity": {
+    "zipSha256": "c019e11b001c3858f18227e74474a5e4138a508bab97651c2778908a4d3c3a64",
+    "zipBytes": 885144,
+    "packageSha256": "c3c025edb5116d358991a9de9ecaf217d526e017cff28172b0a8825e53757972",
+    "pluginDllSha256": "8efba6268e07b5ad794c7692d6b33c492e31edd2b4713c13ac0b4d1501011b09"
+  },
+  "windowsRuntime": {
+    "application": "VCV Rack Free 2.6.6, Windows x64",
+    "libRackDllSha256": "bc0ff199ed17f83e4e838b017f9bb7855d5940ff6a393569fcb6da257d7a25e5",
+    "automated": {
+      "socketChecks": "passed, exit 0, dedicated test port 18057; includes conflict, framing, queue bounds, reconnect and cleanup",
+      "rackEngineAndJsonAllocatorSelfTest": "passed, exit 0",
+      "fullPythonTcpSuite": "not run on Windows"
+    },
+    "userConfirmed": {
+      "emptyPatchAndBridgeGuiLoad": "passed; logs corroborated corrected init and module creation",
+      "physicalIPhoneManualIPv4ConnectionAndTwoWayControl": "passed",
+      "saveAsAndReopenMappingsAndSync": "passed; logs corroborated module recreation",
+      "normalProfileInstallationAndLoadingAndSync": "passed; all five installed plugin-file hashes matched the package"
+    },
+    "limitations": [
+      "User-operated GUI/device results are confirmations, not automated UI observations",
+      "Separate physical Wi-Fi interruption/reconnect not explicitly established",
+      "Windows Bonjour discovery, physical iPad, all sixteen slots and broader device/OS coverage remain outstanding"
+    ]
+  },
+  "macRegression": {
+    "pluginBuilds": "passed, main and public companion copies",
+    "rackEngineAndJsonAllocatorChecks": "passed",
+    "allocatorNegativeControl": "detected the original wrong-deallocator code as expected",
+    "tcpIntegrationTests": "10 passed, isolated harness port 18058",
+    "swiftTests": "11 passed",
+    "iOSSimulatorBuild": "passed"
+  },
+  "staticWindowsChecks": {
+    "correctedImports": [
+      "IPHLPAPI.DLL",
+      "KERNEL32.dll",
+      "msvcrt.dll",
+      "WS2_32.dll",
+      "libRack.dll"
+    ],
+    "rackImportsCheckedAgainstOfficialRuntime": 95,
+    "missingRackImports": 0,
+    "ucrtCompilerAndOriginalBinaryRejected": true
+  },
+  "originalCrash": {
+    "firstKitWithdrawn": true,
+    "ucrtVersusMsvcrtMismatchConfirmed": true,
+    "jsonAllocatorOwnershipCorrected": true,
+    "exactFaultCausation": "not proven; original log had no fault stack"
+  },
+  "testedInputsSha256": {
+    "LICENSE": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986",
+    "Makefile": "40e4fb4ad7d5e025907561a4666f073cf82c7bf5a1687817fbbe6fe73634a738",
+    "plugin.json": "77560baaf82d0b43bb987e89435f244bc62f10c3929dd1e095892c4e697aba28",
+    "res/Bridge.svg": "3978e986628e812b2a82147e6fc3163e20b853d1a6d99f307ab0959f378313e3",
+    "res/DepartureMono-OFL.txt": "b65e42750f3cb65437a97f4dfd781c58f199259949db2341012be60e32500e83",
+    "scripts/build-rack-windows.sh": "0084e47562ab592a394da800f78f33b43354ee0aead53ce0e63d198554bcf5c5",
+    "scripts/check-windows-abi.py": "72f7b53e5813112a81748612eb1979c764f8f2fc7349ae7cfb496291b9add8a1",
+    "scripts/test-rack-windows.sh": "2a924edccd3b8bc3bf63dbf36cd7109d80a76b0cea28733fadd3e3bef52ae9b1",
+    "src/Bridge.cpp": "6ff2ee19a7bc0b8096f7e7fda89d915e0a98ea223d7387ff17447e494ab07661",
+    "src/Bridge.hpp": "a8c66fb6a2b15ffcf1b3e8df1ea929d4538fc71b63b176fbc1d8aa17f2ef0e2e",
+    "src/Discovery.hpp": "b5fd1dc131823ac2ce90dcdda0e64ebb732be6601d0d4ba83c0064f31bf58adf",
+    "src/Socket.hpp": "27f4b394df9b812eaf22b43c6ebe36376b0a99bf8defdf1f3fd50731e808b915",
+    "src/TcpServer.hpp": "2198daf4cbe0a2d16fe936d1b1f351aa5154e17d4d7705a9887c77a930890d25",
+    "src/WindowsBonjour.hpp": "746e9b007c9f15a5d1ec16466b9d9cfa1dc446c82f9064cc7f532e5415d94eb2",
+    "tests/rack_harness.cpp": "738c8b092454daaae59b48d2e40f3c43621feceef916d5edfd7a64668fd0af72",
+    "tests/socket_checks.cpp": "1796accf443d0de8c70405218a20e794650c15439c1da55e19a018435826786d",
+    "tests/test_bridge.py": "897da2c6c3d8b415fa938aa4bccfc91f71d78e46342bf3f967887a0eb8c1fdb1"
+  },
+  "scope": {
+    "linux": "not implemented or validated by this Windows work",
+    "publicRelease": "no new release or asset publication; original v2.3.1 release remains the Mac preview",
+    "security": "trusted LAN protocol; pairing authentication and encryption remain outstanding"
+  }
+}

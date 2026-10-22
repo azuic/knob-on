@@ -1,10 +1,15 @@
 #pragma once
+#include "Socket.hpp"
+#if defined(_WIN32) && defined(_UCRT)
+#error "Rack 2 Windows uses MSVCRT. Build Bridge with an MSVCRT MinGW-w64 toolchain, not UCRT."
+#endif
 #include <rack.hpp>
 #include "TcpServer.hpp"
 #include "Discovery.hpp"
 #include <cmath>
 #include <limits>
 #include <array>
+#include <memory>
 
 using namespace rack;
 extern Plugin* pluginInstance;
@@ -25,6 +30,7 @@ struct Bridge : engine::Module {
     bool learning = false;
     bool handshake = false;
     bool started = false;
+    uint16_t listenPort = 8057;
     bool dirty = true;
     std::string lastSnapshot;
     std::string message;
@@ -96,9 +102,16 @@ struct Bridge : engine::Module {
         newMapping(control);
     }
 
+    static std::unique_ptr<char, json_free_t> dumpJSON(json_t* object, size_t flags) {
+        // Rack owns Jansson's allocator, including any custom callbacks.
+        json_free_t release = nullptr;
+        json_get_alloc_funcs(nullptr, &release);
+        return std::unique_ptr<char, json_free_t>(json_dumps(object, flags), release);
+    }
+
     void sendJSON(json_t* object) {
-        char* raw = json_dumps(object, JSON_COMPACT | JSON_ENCODE_ANY);
-        if (raw) { server.sendLine(raw); free(raw); }
+        auto raw = dumpJSON(object, JSON_COMPACT | JSON_ENCODE_ANY);
+        if (raw) server.sendLine(raw.get());
         json_decref(object);
     }
 
@@ -125,9 +138,8 @@ struct Bridge : engine::Module {
             "stepped", q ? q->snapEnabled : false,
             "ack", static_cast<json_int_t>(sequences[control]));
         json_object_set_new(state, "control", json_integer(control));
-        char* raw = json_dumps(state, JSON_COMPACT);
-        std::string result = raw ? raw : "";
-        free(raw);
+        auto raw = dumpJSON(state, JSON_COMPACT);
+        std::string result = raw ? raw.get() : "";
         json_decref(state);
         return result;
     }
@@ -201,11 +213,11 @@ struct Bridge : engine::Module {
     void uiStep() {
         const double time = knob::now();
         if (!started && time >= nextListen) {
-            started = server.start();
+            started = server.start(listenPort);
             nextListen = time + 2;
         }
         server.step();
-        discovery.step(started, time);
+        discovery.step(started, time, listenPort);
         if (learning && APP->scene) {
             auto* touched = APP->scene->rack->getTouchedParam();
             if (touched && touched->module && touched->module != this) {

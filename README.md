@@ -25,9 +25,15 @@ make dist
 
 The package appears in `dist/`. This repository contains the companion source and public support site; the iOS project is maintained separately.
 
+## Windows
+
+Windows x64 basic testing has passed with Rack Free 2.6.6: automated socket and Rack allocator checks, plugin loading, physical iPhone connection by IPv4, two-way control, and saved mappings/sync after reopening a patch. User-operated checks are recorded separately from automated checks in the [validation record](docs/windows-validation.json).
+
+Build with an MSVCRT MinGW-w64 toolchain; UCRT builds are rejected. See [Windows setup, build, and remaining checks](docs/windows.md). Windows Bonjour discovery and broader device coverage remain outstanding. The first Windows test kit was withdrawn after a reported crash; use the corrected source. The published release download remains the Mac preview. Linux remains separate work required for VCV Library eligibility.
+
 ## Connection and limitations
 
-Bridge 2.3.1 supports sixteen independent mappings, one Bridge instance, and one controller per Rack process, on TCP port 8057. It uses local Bonjour discovery. It does not restrict mapping to particular module names. Most bounded parameters are supported; unbounded parameters are rejected. Internal CV modulation may change sound without changing the displayed parameter value.
+Bridge 2.3.1 supports sixteen independent mappings, one Bridge instance, and one controller per Rack process, on TCP port 8057. macOS uses system Bonjour discovery; Windows provides manual IPv4 connection and optional discovery through an existing system Bonjour runtime. It does not restrict mapping to particular module names. Most bounded parameters are supported; unbounded parameters are rejected. Internal CV modulation may change sound without changing the displayed parameter value.
 
 The current protocol has no pairing authentication or encryption. Use a trusted local network and do not forward port 8057 to the internet. Pairing is an outstanding hardening task before a wider public launch. The release is a preview for the upcoming app, not a VCV Library listing.
 
