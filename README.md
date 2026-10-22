@@ -29,7 +29,17 @@ The package appears in `dist/`. This repository contains the companion source an
 
 Windows x64 basic testing has passed with Rack Free 2.6.6: automated socket and Rack allocator checks, plugin loading, physical iPhone connection by IPv4, two-way control, and saved mappings/sync after reopening a patch. User-operated checks are recorded separately from automated checks in the [validation record](docs/windows-validation.json).
 
-Build with an MSVCRT MinGW-w64 toolchain; UCRT builds are rejected. See [Windows setup, build, and remaining checks](docs/windows.md). Windows Bonjour discovery and broader device coverage remain outstanding. The first Windows test kit was withdrawn after a reported crash; use the corrected source. The published release download remains the Mac preview. Linux remains separate work required for VCV Library eligibility.
+Build with an MSVCRT MinGW-w64 toolchain; UCRT builds are rejected. See [Windows setup, build, and remaining checks](docs/windows.md). Windows Bonjour discovery and broader device coverage remain outstanding. The first Windows test kit was withdrawn after a reported crash; use the corrected source. The published release download remains the Mac preview. Linux validation and its remaining limits are described below.
+
+## Linux
+
+Linux x64 builds and runs in Ubuntu 22.04 under Docker/Rosetta emulation on an
+Apple-silicon Mac with Rack Free 2.6.6. Automated tests cover sockets, allocator
+ownership, sixteen controls, actual Rack/Fundamental VCO/VCF feedback, reconnect
+and saved mappings. Linux uses manual IPv4 connection; mDNS discovery is not
+implemented. Native Linux desktop and physical-phone acceptance remain
+outstanding. See [Linux validation and build instructions](docs/linux.md).
+The published download remains the Mac preview.
 
 ## Connection and limitations
 

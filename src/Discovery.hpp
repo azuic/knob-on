@@ -4,6 +4,9 @@
 #include <cstdint>
 #include <string>
 #include <vector>
+#ifdef __linux__
+#include "LinuxAddress.hpp"
+#endif
 #ifdef _WIN32
 #include <iphlpapi.h>
 #include "WindowsBonjour.hpp"
@@ -72,6 +75,9 @@ class Discovery {
             }
         }
         return fallback;
+#elif defined(__linux__)
+        // No Avahi/Bonjour daemon or .local resolution is required for TCP.
+        return linuxnet::localAddress();
 #else
 #ifdef __APPLE__
         CFStringRef value = SCDynamicStoreCopyLocalHostName(nullptr);

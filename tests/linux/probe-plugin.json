@@ -1,0 +1,8 @@
+{
+  "slug": "KnobOnLinuxProbe",
+  "name": "Knob On Linux Test Probe",
+  "version": "2.0.0",
+  "license": "GPL-3.0-or-later",
+  "author": "Knob On contributors",
+  "modules": [{"slug": "Probe", "name": "Validation probe", "tags": ["Utility"]}]
+}

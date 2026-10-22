@@ -69,6 +69,11 @@ int main() {
     // Exercise discovery shutdown/retry without requiring a Bonjour daemon.
     knob::Discovery discovery;
     discovery.step(true, knob::now(), 18057);
+#ifdef __linux__
+    assert(!discovery.advertised);
+    in_addr address{};
+    assert(discovery.address.empty() || inet_pton(AF_INET, discovery.address.c_str(), &address) == 1);
+#endif
     discovery.step(false, knob::now(), 18057);
     assert(!discovery.advertised);
     std::cout << "Socket startup, port conflict, single client, framing, feedback, queue bound, reconnect, cleanup: passed\n";

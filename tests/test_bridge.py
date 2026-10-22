@@ -3,7 +3,9 @@ import json
 import os
 import select
 import socket
+import struct
 import subprocess
+import sys
 import time
 import unittest
 from pathlib import Path
@@ -199,6 +201,19 @@ class BridgeTests(unittest.TestCase):
     def test_controller_close_keeps_listener_available(self):
         self.socket.close()
         time.sleep(0.05)
+        self.connect()
+        self.send(type="ping")
+        self.assertEqual(self.until(lambda m: m.get("type") == "pong")["type"], "pong")
+
+    @unittest.skipUnless(sys.platform.startswith("linux"), "Linux reset regression")
+    def test_reset_during_feedback_keeps_process_and_listener_alive(self):
+        # Abort while responses are queued, with subprocess SIGPIPE restored to
+        # its default disposition. A peer disappearing must not terminate Rack.
+        self.socket.sendall(b'{"type":"sync","version":1}\n' * 128)
+        self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_LINGER, struct.pack("ii", 1, 0))
+        self.socket.close()
+        time.sleep(0.05)
+        self.assertIsNone(self.process.poll())
         self.connect()
         self.send(type="ping")
         self.assertEqual(self.until(lambda m: m.get("type") == "pong")["type"], "pong")
