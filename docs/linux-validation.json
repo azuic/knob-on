@@ -1,0 +1,108 @@
+{
+  "date": "2026-10-22",
+  "version": "2.3.1",
+  "target": "lin-x64",
+  "status": "Passed automated Linux x64 build and runtime validation under Rosetta emulation; native desktop and physical phone acceptance outstanding",
+  "testedCodeCommit": "3512dd5e4cc84f4f36740bfc354b4966883c88b6",
+  "windowsBaselineCommit": "0d4436017b6466205b5f2d7f69405f793aa2e0da",
+  "environment": {
+    "host": "Authorized Apple-silicon Mac",
+    "dockerDesktop": "4.96.2 (244353)",
+    "dockerEngine": "29.9.2",
+    "dockerInstallerSha256": "8a254f21b9b59c5d5c51c5d1b92fa97ee51d95ae7087b2be12587b424bdb4e25",
+    "dockerSignature": "Docker Inc, Apple Developer ID team 9BNSXJN65R; deep/strict signature verification passed",
+    "virtualization": "Apple Virtualization framework with existing Rosetta; amd64 userspace on ARM64 Linux VM",
+    "ubuntu": "22.04 amd64",
+    "ubuntuImageDigest": "sha256:0a9887931b0e38af2e3487ed39e29436b0535c4f3f52e57745baaf79d1898956",
+    "testImageId": "sha256:4a7b560e5e12dda722b207bd1f0c7d2d89a46cf0c1372f47b0ae0fb9471286a6",
+    "kernel": "7.0.14-linuxkit",
+    "compiler": "GCC 11.4.0",
+    "glibc": "2.35",
+    "cpus": 2,
+    "memoryMiB": 4096,
+    "swapMiB": 1024,
+    "diskLimitMiB": 16384,
+    "fileSharing": "Linux worktree only",
+    "testNetworking": "No external network for build/runtime tests; separate interface probe on Docker bridge; no ports published",
+    "renderer": "Mesa llvmpipe LLVM 15.0.7, OpenGL 4.5 Mesa 23.2.1"
+  },
+  "rack": {
+    "version": "Rack Free 2.6.6 Linux x64",
+    "sdkSha256": "420da2452def7b195f98e3a0650c35f1e0f058a98a71840b4347d3d203618532",
+    "runtimeSha256": "69acf0c98d47db381291a115d609dcfbb99887bd7bd8641f0489da063fb0fc6e",
+    "fundamental": "2.6.4, bundled by the official Rack runtime archive",
+    "downloadHashNote": "Downloaded from official VCV HTTPS URLs; hashes recorded for identification, not independently published vendor checksums"
+  },
+  "package": {
+    "filename": "KnobOn-2.3.1-lin-x64.vcvplugin",
+    "sha256": "527f42c6e9460d3c895bd305d35a3ca3047cbf1b65cc66f893becd3e6fe10270",
+    "packagedPluginSoSha256": "afcb76d4ed65ca9428acc778a5e42d008e1067a77dcd6175d1f3e21338baa5e6",
+    "needed": [
+      "libRack.so",
+      "libm.so.6",
+      "libc.so.6"
+    ],
+    "runpath": "/tmp/Rack2",
+    "highestImportedGlibcVersion": "2.34",
+    "publishedReleaseArtifact": false
+  },
+  "checks": {
+    "linuxPluginBuildAndPackage": "passed",
+    "linuxAddressSelectionFixtures": "passed; route metric/default filtering and invalid/inactive-address fallback",
+    "linuxInterfaceEnumeration": "passed on isolated Docker bridge; container address is not phone/LAN acceptance",
+    "linuxSocketLifecycle": "passed; startup, port conflict, single client, framing, feedback, queue bound, reconnect, cleanup; no mDNS service",
+    "linuxRackEngineAndJanssonOwnership": "passed",
+    "linuxTcpIntegrationTests": {
+      "passed": 11,
+      "failed": 0,
+      "includes": "abrupt controller reset during queued feedback"
+    },
+    "actualRackApplication": "passed; package extracted and loaded by Rack, sixteen independent writes, stepped target, independent actual Fundamental VCO/VCF feedback, reconnect, saved mappings/values on application restart, clean shutdown",
+    "applicationReport": "linux-app-validation.json",
+    "nativeMacPluginBuild": "passed using Rack SDK 2.6.6 arm64",
+    "macAddressSelectionLogic": "passed; not Linux execution",
+    "nonLinuxScriptRejection": "passed",
+    "shellPythonSyntaxAndGitWhitespace": "passed"
+  },
+  "remaining": [
+    "Native Linux desktop graphics/audio/device acceptance",
+    "Physical iPhone/iPad connection and two-way controls on Linux LAN",
+    "Human-operated Learn target selection on Linux",
+    "Linux mDNS service registration is not implemented; manual IPv4 only",
+    "Older Linux distributions/glibc compatibility; this local package imports GLIBC_2.34",
+    "Additional adapters, VPN and Wi-Fi/Ethernet switching acceptance"
+  ],
+  "isolation": {
+    "liveRackProfilesOrPatchesModified": false,
+    "hostPort8057BoundOrPublished": false,
+    "normalRackPluginInstallationModified": false,
+    "testOnlyProbeInProductPackage": false,
+    "firewallOrSecuritySettingsChanged": false
+  },
+  "sourceBuildAndTestInputSha256": {
+    "Makefile": "40e4fb4ad7d5e025907561a4666f073cf82c7bf5a1687817fbbe6fe73634a738",
+    "plugin.json": "77560baaf82d0b43bb987e89435f244bc62f10c3929dd1e095892c4e697aba28",
+    "src/Bridge.cpp": "6ff2ee19a7bc0b8096f7e7fda89d915e0a98ea223d7387ff17447e494ab07661",
+    "src/Bridge.hpp": "a8c66fb6a2b15ffcf1b3e8df1ea929d4538fc71b63b176fbc1d8aa17f2ef0e2e",
+    "src/Discovery.hpp": "2fac8d7282805e85772f8d8142e05f2bce004068f338cfae8b48e9f3cc78f413",
+    "src/LinuxAddress.hpp": "d4f6609d892f9e667e67d55d9eaf415d4b2ee5157b70aa783bd205cb753dcb86",
+    "src/Socket.hpp": "27f4b394df9b812eaf22b43c6ebe36376b0a99bf8defdf1f3fd50731e808b915",
+    "src/TcpServer.hpp": "2198daf4cbe0a2d16fe936d1b1f351aa5154e17d4d7705a9887c77a930890d25",
+    "src/WindowsBonjour.hpp": "746e9b007c9f15a5d1ec16466b9d9cfa1dc446c82f9064cc7f532e5415d94eb2",
+    "res/Bridge.svg": "3978e986628e812b2a82147e6fc3163e20b853d1a6d99f307ab0959f378313e3",
+    "res/DepartureMono-OFL.txt": "b65e42750f3cb65437a97f4dfd781c58f199259949db2341012be60e32500e83",
+    "tests/linux/Dockerfile": "980077693a94ba2ae50e02e48caaf9e0e9eba68111d9bbf55c4bf98ae927b74e",
+    "tests/linux/Probe.cpp": "3bf74b7e36fd295feb17ee7227863a5276c254ac9f10607f55a38220551c67c4",
+    "tests/linux/probe-plugin.json": "d17b9d391d270110a983f237194c9b578f66ff907449ca2790011270dcfb3c23",
+    "tests/linux_address_checks.cpp": "9b40ea2ca0f58a9f74fcd7299b1fb108e6c0cf0575da0f5d92c42b55d32474aa",
+    "tests/rack_harness.cpp": "738c8b092454daaae59b48d2e40f3c43621feceef916d5edfd7a64668fd0af72",
+    "tests/socket_checks.cpp": "d4cef3573bcfd3f8d2efa337921212d6a53917d016e22f5668be49890a55b477",
+    "tests/test_bridge.py": "2c8b3036d955430a435910463742b94a60a99851dac1c3baaf3b301d5a1906b5",
+    "scripts/build-rack-linux.sh": "4d937f85496266ddc94bb94033d8074cef129c4acf2599f627a69337b8698364",
+    "scripts/build-rack-windows.sh": "0084e47562ab592a394da800f78f33b43354ee0aead53ce0e63d198554bcf5c5",
+    "scripts/check-windows-abi.py": "72f7b53e5813112a81748612eb1979c764f8f2fc7349ae7cfb496291b9add8a1",
+    "scripts/test-rack-linux-app.py": "33f2e97f4da823f21ce906e76951af077cf86605fbbb30d29b43fa07b662fe55",
+    "scripts/test-rack-linux.sh": "7b47070563871e0d48c11fa07010f65322735adfd94af3899f05b8886bfdeb73",
+    "scripts/test-rack-windows.sh": "2a924edccd3b8bc3bf63dbf36cd7109d80a76b0cea28733fadd3e3bef52ae9b1"
+  }
+}
